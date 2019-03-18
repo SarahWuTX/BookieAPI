@@ -1,9 +1,10 @@
-package com.tj.bookie.model;
+package com.tj.bookie.utility.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
 import lombok.*;
+import org.hibernate.annotations.NaturalId;
 
 
 @Data
@@ -17,10 +18,9 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotEmpty
+    @NaturalId
     private String name;
 
-    @NotEmpty
     private String password;
 
 }

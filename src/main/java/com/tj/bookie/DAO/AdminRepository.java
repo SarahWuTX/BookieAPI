@@ -1,9 +1,11 @@
 package com.tj.bookie.DAO;
 
-import com.tj.bookie.model.Admin;
-import org.springframework.data.repository.CrudRepository;
+import com.tj.bookie.utility.model.Admin;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 
-public interface AdminRepository extends CrudRepository<Admin, Integer> {
+@Transactional
+public interface AdminRepository extends JpaRepository<Admin, Integer> {
     Admin findByName(String name);
 }

@@ -1,66 +1,51 @@
 package com.tj.bookie.controller;
 
-import com.tj.bookie.DAO.UserRepository;
-import com.tj.bookie.model.User;
+import com.tj.bookie.service.UserService;
+import com.tj.bookie.utility.model.User;
+import com.tj.bookie.utility.request.InputUser;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.text.ParseException;
+import java.util.*;
 
 
 @RestController
 @RequestMapping("/user")
 @Validated
 public class UserController {
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Autowired
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
 
-    @ApiOperation(value="获取用户", notes="notes here")
+    @ApiOperation(value="获取用户", notes = "如果该用户不存在，会返回null，但HttpCode还是200")
     @GetMapping(path="/get")
     public ResponseEntity<?> getUser(@RequestParam @NotEmpty String wxId) {
-        User user = userRepository.findByWxId(wxId);
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return userService.getUser(wxId);
     }
 
-    @ApiOperation(value="新建用户", notes="notes here")
+
+    @ApiOperation(value="新建用户", notes = "生日按yyyy-MM-dd传，address是String[]，可依次填'省，市，区，详细地址'，下单时可以作为默认值")
     @PostMapping(path="/create")
-    public ResponseEntity<?> createUser(@RequestParam @NotEmpty String wxId,
-                                        @RequestParam @NotEmpty String name,
-                                        @RequestParam @NotEmpty String phone,
-                                        @RequestParam(required = false) @NotNull Date birthday,
-                                        @RequestParam(required = false) @NotEmpty String province) {
-        if (userRepository.findByWxId(wxId) != null) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        userRepository.save(new User(wxId, name, phone, birthday, province));
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<?> createUser(@RequestBody @NotNull InputUser inputUser) throws ParseException {
+        return userService.createUser(inputUser);
     }
 
-    @ApiOperation(value="更改用户", notes="notes here")
+
+    @ApiOperation(value="更改用户", notes = "生日按yyyy-MM-dd传，address是String[]，可依次填'省，市，区，详细地址'，下单时可以作为默认值")
     @PostMapping(path="/modify")
-    public ResponseEntity<?> modifyUser(User user) {
-        Optional<User> user1 = userRepository.findById(user.getId());
-        if (!user1.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        userRepository.save(user);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<?> modifyUser(@RequestBody @NotNull InputUser inputUser) throws ParseException {
+        return userService.modifyUser(inputUser);
     }
+
+
 
 }

@@ -1,10 +1,12 @@
-package com.tj.bookie.model;
+package com.tj.bookie.utility.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Timestamp;
 
@@ -20,17 +22,19 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull
-    private Integer userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User userId;
 
-    @NotNull
-    private Integer bookId;
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    private Book bookId;
 
-    @NotNull
     private Integer count;
 
     @Column(insertable = false)
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Timestamp time;
 
 }

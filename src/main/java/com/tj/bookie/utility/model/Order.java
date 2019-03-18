@@ -1,12 +1,15 @@
-package com.tj.bookie.model;
+package com.tj.bookie.utility.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 
 
 @Data
@@ -18,30 +21,37 @@ public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Integer id;
 
-    @NotEmpty
-    private Integer userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User userId;
 
-    @NotNull
     private Float totalPrice;
 
     private Integer status;
 
-    @NotEmpty
     private String receiverName;
 
-    @NotEmpty
     private String receiverPhone;
 
-    @NotEmpty
-    private String receiverProvince;
-
-    @NotEmpty
     private String receiverAddress;
 
+    private Float deliveryFee;
+
     @Column(insertable = false)
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Timestamp orderTime;
+
+    @OneToMany(mappedBy = "orderId")
+    private Collection<History> orderList;
+
+    @Transient
+    private Integer totalCount;
+
+    @Transient
+    private String orderId;
 
 }

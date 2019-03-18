@@ -1,28 +1,46 @@
 package com.tj.bookie.controller;
 
-import com.tj.bookie.DAO.BookRepository;
-import com.tj.bookie.model.Book;
+import com.tj.bookie.DAO.HistoryRepository;
+import com.tj.bookie.service.BookService;
 import io.swagger.annotations.ApiOperation;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/book")
 @Validated
 public class BookController {
-    private final BookRepository bookRepository;
+    private final BookService bookService;
 
     @Autowired
-    public BookController(BookRepository bookRepository) { this.bookRepository = bookRepository; }
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
+    }
 
-    @ApiOperation(value="获取书列表", notes="notes here")
+    @ApiOperation(value="获取所有书(无序)", notes="临时测试用")
     @GetMapping(path="/getAll")
-    public Iterable<Book> getAll() {
-        return bookRepository.findAll();
+    public ResponseEntity<?> getAll() {
+        return bookService.getAll();
+    }
+
+
+    @ApiOperation(value="价格由低到高排序", notes="注意第一个分页是0，每页10条")
+    @GetMapping(path="/getByPrice")
+    public ResponseEntity<?> getByPrice(@RequestParam Integer page) throws JSONException {
+        return bookService.getByPrice(page);
+    }
+
+
+    @ApiOperation(value="销量由高到低排序", notes="注意第一个分页是0，每页10条")
+    @GetMapping(path="/getBySales")
+    public ResponseEntity<?> getBySales(@RequestParam Integer page) throws JSONException {
+        return bookService.getBySales(page);
     }
 
 }
