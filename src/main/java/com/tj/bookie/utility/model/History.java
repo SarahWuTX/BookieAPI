@@ -36,4 +36,11 @@ public class History {
     @JoinColumn(name = "book_id")
     private Book bookId;
 
+    public History(Order orderId, Integer userId, Book bookId, Integer count){
+        this.orderId = orderId;
+        this.userId = userId;
+        this.bookId = bookId;
+        this.count = count;
+    }
+
 }

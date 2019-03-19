@@ -26,7 +26,7 @@ public class UserController {
     }
 
 
-    @ApiOperation(value="获取用户", notes = "如果该用户不存在，会返回null，但HttpCode还是200")
+    @ApiOperation(value="获取用户", notes = "如果该用户不存在，会返回404，可根据信息跳转到注册界面")
     @GetMapping(path="/get")
     public ResponseEntity<?> getUser(@RequestParam @NotEmpty String wxId) {
         return userService.getUser(wxId);

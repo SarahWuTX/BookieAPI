@@ -45,7 +45,7 @@ public class CartService {
 
 
     public ResponseEntity<?> save(InputCart inputCart) {
-        Optional<User> user = userRepository.findByWxId(inputCart.getWx_id());
+        Optional<User> user = userRepository.findByWxId(inputCart.getWxId());
         Optional<Book> book = bookRepository.findById(inputCart.getBookId());
         if (!user.isPresent() || !book.isPresent()) {
             return new ResponseEntity<>("对象不存在", HttpStatus.NOT_FOUND);
@@ -75,6 +75,7 @@ public class CartService {
         for (Cart cart: carts) {
             JSONObject jsonBook = Util.parseBookToJSONFull(cart.getBookId());
             jsonBook.put("count", cart.getCount());
+            jsonBook.put("cartId", cart.getId());
             result.put(jsonBook);
         }
         return new ResponseEntity<>(result.toString(), HttpStatus.OK);

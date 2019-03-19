@@ -14,7 +14,7 @@ import java.util.List;
 public class InputUser {
 
     @NotEmpty
-    private String wx_id;
+    private String wxId;
 
     @NotEmpty
     private String name;

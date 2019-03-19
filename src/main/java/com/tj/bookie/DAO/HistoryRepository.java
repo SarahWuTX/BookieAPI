@@ -29,6 +29,10 @@ public interface HistoryRepository extends JpaRepository<History, Integer>, JpaS
             "join t_order t on th.order_id = t.id " +
             "where t.order_time <= :endD and t.order_time >= :beginD " +
             "group by tc.name", nativeQuery = true)
-    List<Map<String, Integer>> findSalesBetween(@Param("beginD") Date startDate, @Param("endD") Date endDate);
+    List<Object[]> findSalesBetween(@Param("beginD") Date startDate, @Param("endD") Date endDate);
+
+    @Query(value = "select c,count(u) from (select user_id u,sum(count) c from t_history group by user_id) tb " +
+            "group by c order by c asc", nativeQuery = true)
+    List<Object[]> findUserByCount();
 
 }

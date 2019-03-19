@@ -66,7 +66,8 @@ public class Book {
 //                    referencedColumnName = "id"
 //            )
 //    )
-//    @JsonIgnore
-//    private List<Category> categories;
+    @ManyToMany(targetEntity = com.tj.bookie.utility.model.Category.class)
+    @JsonIgnore
+    List<Category> categories;
 
 }

@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class InputCart {
     @NotEmpty
-    private String wx_id;
+    private String wxId;
 
     @NotNull
     private Integer bookId;

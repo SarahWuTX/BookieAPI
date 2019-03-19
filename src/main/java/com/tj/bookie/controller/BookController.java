@@ -3,6 +3,7 @@ package com.tj.bookie.controller;
 import com.tj.bookie.DAO.HistoryRepository;
 import com.tj.bookie.service.BookService;
 import io.swagger.annotations.ApiOperation;
+import org.hibernate.validator.constraints.Range;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotEmpty;
 
 
 @RestController
@@ -32,15 +35,23 @@ public class BookController {
 
     @ApiOperation(value="价格由低到高排序", notes="注意第一个分页是0，每页10条")
     @GetMapping(path="/getByPrice")
-    public ResponseEntity<?> getByPrice(@RequestParam Integer page) throws JSONException {
+    public ResponseEntity<?> getByPrice(@RequestParam @Range(min = 0) Integer page) {
         return bookService.getByPrice(page);
     }
 
 
     @ApiOperation(value="销量由高到低排序", notes="注意第一个分页是0，每页10条")
     @GetMapping(path="/getBySales")
-    public ResponseEntity<?> getBySales(@RequestParam Integer page) throws JSONException {
+    public ResponseEntity<?> getBySales(@RequestParam @Range(min = 0) Integer page) {
         return bookService.getBySales(page);
     }
+
+    @ApiOperation(value="用户偏好推荐(乱序)", notes="注意第一个分页是0，每页10条")
+    @GetMapping(path="/getByUser")
+    public ResponseEntity<?> getByUser(@RequestParam @Range(min = 0) Integer page,
+                                       @RequestParam @NotEmpty String wxId) {
+        return bookService.getByUser(page, wxId);
+    }
+
 
 }

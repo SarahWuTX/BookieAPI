@@ -26,7 +26,9 @@ public class UserService {
 
 
     public ResponseEntity<?> getUser(String wx_id) {
-        return new ResponseEntity<>(userRepository.findByWxId(wx_id).get(), HttpStatus.OK);
+        Optional<User> user = userRepository.findByWxId(wx_id);
+        return user.<ResponseEntity<?>>map(user1 -> new ResponseEntity<>(user1, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>("对象不存在", HttpStatus.NOT_FOUND));
     }
 
 
@@ -38,7 +40,7 @@ public class UserService {
 
 
     public ResponseEntity<?> modifyUser(InputUser inputUser) throws ParseException {
-        Optional<User> oldUser = userRepository.findByWxId(inputUser.getWx_id());
+        Optional<User> oldUser = userRepository.findByWxId(inputUser.getWxId());
         if (!oldUser.isPresent()) {
             return new ResponseEntity<>("对象不存在", HttpStatus.NOT_FOUND);
         }
@@ -57,7 +59,7 @@ public class UserService {
      */
     public User parseInputToUser(InputUser inputUser) throws ParseException{
         User user = new User();
-        user.setWxId(inputUser.getWx_id());
+        user.setWxId(inputUser.getWxId());
         user.setName(inputUser.getName());
         user.setPhone(inputUser.getPhone());
         Date birthday;

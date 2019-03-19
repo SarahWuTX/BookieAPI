@@ -20,6 +20,7 @@ public class Util {
         StringBuilder categoryList = new StringBuilder();
         for (Category category: categories) {
             categoryList.append(category.getName());
+            categoryList.append(" ");
         }
         return categoryList.toString();
     }

@@ -3,9 +3,12 @@ package com.tj.bookie.service;
 import com.tj.bookie.DAO.BookRepository;
 import com.tj.bookie.DAO.CategoryRepository;
 import com.tj.bookie.DAO.HistoryRepository;
+import com.tj.bookie.DAO.UserRepository;
 import com.tj.bookie.utility.Util;
 import com.tj.bookie.utility.model.Book;
-import org.json.JSONArray;
+import com.tj.bookie.utility.model.Category;
+import com.tj.bookie.utility.model.User;
+import io.swagger.models.auth.In;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +28,16 @@ public class BookService {
     private final BookRepository bookRepository;
     private final HistoryRepository historyRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
 
     @Autowired
-    public BookService(BookRepository bookRepository, HistoryRepository historyRepository, CategoryRepository categoryRepository) {
+    public BookService(BookRepository bookRepository, HistoryRepository historyRepository,
+                       CategoryRepository categoryRepository, UserRepository userRepository) {
         this.bookRepository = bookRepository;
         this.historyRepository = historyRepository;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
     }
 
 
@@ -42,7 +48,7 @@ public class BookService {
 
     public ResponseEntity<?> getByPrice(Integer page) {
         int pageSize = 10;
-        List<Book> books = bookRepository.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "price"))).getContent();
+        List<Book> books = bookRepository.findAllOrderByPriceAsc(PageRequest.of(page, pageSize)).getContent();
         for (Book book: books) {
             book.setCategory(Util.categoriesToString(categoryRepository.findByBooks_Id(book.getId())));
         }
@@ -70,6 +76,32 @@ public class BookService {
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
+
+    public ResponseEntity<?> getByUser(Integer page, String wxId) {
+        int pageSize = 10;
+        Optional<User> user = userRepository.findByWxId(wxId);
+        if(!user.isPresent()) {
+            return new ResponseEntity<>("对象不存在", HttpStatus.NOT_FOUND);
+        }
+        List<Book> books = bookRepository.findBooksByUserPreference
+                (user.get().getId(), PageRequest.of(page, pageSize)).getContent();
+        if (books.size() < 10 && page == 0) {
+            Set<Integer> ids = new HashSet<>();
+            books.forEach(book -> ids.add(book.getId()));
+            List<Book> original = new ArrayList<>(books);
+            List<Book> additional = bookRepository.findAll(PageRequest.of(page, pageSize)).getContent();
+            for (Book book : additional) {
+                if (!ids.contains(book.getId())) {
+                    original.add(book);
+                }
+                if (original.size() >= 10) {
+                    break;
+                }
+            }
+            return new ResponseEntity<>(original, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
 
     /**
      * get detail info of a book, including sales and category
