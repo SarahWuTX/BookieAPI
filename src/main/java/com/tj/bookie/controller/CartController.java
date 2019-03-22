@@ -45,4 +45,20 @@ public class CartController {
                                  @RequestParam @Range(min = 0) Integer bookId) {
         return cartService.delete(wxId, bookId);
     }
+
+
+    @ApiOperation(value="获取某用户某本书在购物车中的数量", notes = "")
+    @GetMapping(path="/getCount")
+    public ResponseEntity<?> getCount(@RequestParam @NotEmpty String wxId,
+                                      @RequestParam @Range(min = 0) Integer bookId) {
+        return cartService.getCount(wxId, bookId);
+    }
+
+
+    @ApiOperation(value="获取某购物车条目详情", notes = "")
+    @GetMapping(path="/getById")
+    public ResponseEntity<?> getById(@RequestParam @Range(min = 0) Integer cartId) throws JSONException {
+        return cartService.getById(cartId);
+    }
+
 }

@@ -14,4 +14,6 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
     Optional<Cart> findByBookIdAndUserId(Book book, User user);
     Page<Cart> findAllByUserIdOrderByTimeDesc(User user, Pageable pageable);
     Integer deleteCartByBookIdAndUserId(Book book, User user);
+    Optional<Cart> findByBookId_IdAndUserId_WxId(Integer bookId, String wxId);
+
 }

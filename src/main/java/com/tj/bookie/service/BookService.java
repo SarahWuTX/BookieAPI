@@ -41,8 +41,13 @@ public class BookService {
     }
 
 
-    public ResponseEntity<?> getAll() {
-        return new ResponseEntity<>(bookRepository.findAll(), HttpStatus.OK);
+    public ResponseEntity<?> getAll(Integer page) {
+        int pageSize = 10;
+        List<Book> books = bookRepository.findAll(PageRequest.of(page, pageSize)).getContent();
+        for (Book book: books) {
+            book.setCategory(Util.categoriesToString(categoryRepository.findByBooks_Id(book.getId())));
+        }
+        return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
 
@@ -98,7 +103,13 @@ public class BookService {
                     break;
                 }
             }
+            for (Book book: original) {
+                book.setCategory(Util.categoriesToString(categoryRepository.findByBooks_Id(book.getId())));
+            }
             return new ResponseEntity<>(original, HttpStatus.OK);
+        }
+        for (Book book: books) {
+            book.setCategory(Util.categoriesToString(categoryRepository.findByBooks_Id(book.getId())));
         }
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
@@ -116,7 +127,7 @@ public class BookService {
             bookDetail = Util.parseBookToJSON(book.get());
         }
         bookDetail.put("category", Util.categoriesToString(categoryRepository.findByBooks_Id(bookId)));
-        bookDetail.put("sales", historyRepository.findSalesByBookId(bookId));
+//        bookDetail.put("sales", historyRepository.findSalesByBookId(bookId));
         return bookDetail;
     }
 

@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Transactional
 public interface BookRepository extends JpaRepository<Book, Integer> {
-//    @Query(value = "select * from t_book", nativeQuery = true)
+//    @Query(value = "select tb.id id, isbn,tb.name name,tb.cover_url coverUrl, price,discount,author,publisher,description,tb.stock,tb.sales from t_book tb ", nativeQuery = true)
     Page<Book> findAll(Pageable pageable);
 
     @Query(value = "select * from t_book order by price*discount asc", nativeQuery = true)
@@ -26,12 +26,12 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     Page<Book> findByStockIsLessThan(Integer stock, Pageable pageable);
 
-    @Query(value = "select distinct(tb.id),isbn,tb.name,price,cover_url,discount,author,publisher,description,tb.stock,tb.sales " +
-            "from t_book tb,t_book_category tbc,t_category tc " +
-            "where tb.id=tbc.book_id and tc.id=tbc.category_id " +
+    @Query(value = "select distinct t_book.* " +
+            "from t_book,t_book_category tbc ,t_category tc " +
+            "where t_book.id=tbc.book_id and tc.id=tbc.category_id " +
             "and tc.id in (select distinct category_id " +
             "from t_book_category tbc join t_history th on tbc.book_id=th.book_id " +
-            "where th.user_id = :uid)", nativeQuery = true)
+            "where th.user_id=:uid) ", nativeQuery = true)
     Page<Book> findBooksByUserPreference(@Param(value = "uid") Integer userId, Pageable pageable);
 
 }

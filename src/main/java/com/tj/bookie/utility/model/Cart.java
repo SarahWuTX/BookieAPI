@@ -34,7 +34,6 @@ public class Cart {
     private Integer count;
 
     @Column(insertable = false)
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Timestamp time;
 
 }

@@ -13,6 +13,8 @@ import javax.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionSystemException;
 import java.text.ParseException;
+import java.sql.SQLException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 
 
 @ControllerAdvice(basePackages = "com.tj.bookie" )
@@ -34,6 +36,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> transactionSystemExceptionHandler(TransactionSystemException e){
         e.printStackTrace();
         return new ResponseEntity<>("错误的数据库操作", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidDataAccessResourceUsageException.class)
+    public ResponseEntity<?> InvalidDataAccessResourceUsageExceptionHandler(InvalidDataAccessResourceUsageException e){
+        e.printStackTrace();
+        return new ResponseEntity<>("玄学错误，我搞不懂", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(ParseException.class)

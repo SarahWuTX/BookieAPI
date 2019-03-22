@@ -64,9 +64,9 @@ public class CartService {
     }
 
 
-    public ResponseEntity<?> get(String wx_id, Integer page) throws JSONException {
+    public ResponseEntity<?> get(String wxId, Integer page) throws JSONException {
         int pageSize = 10;
-        Optional<User> user = userRepository.findByWxId(wx_id);
+        Optional<User> user = userRepository.findByWxId(wxId);
         if (!user.isPresent()) {
             return new ResponseEntity<>("对象不存在", HttpStatus.OK);
         }
@@ -82,8 +82,8 @@ public class CartService {
     }
 
 
-    public ResponseEntity<?> delete(String wx_id, Integer bookId) {
-        Optional<User> user = userRepository.findByWxId(wx_id);
+    public ResponseEntity<?> delete(String wxId, Integer bookId) {
+        Optional<User> user = userRepository.findByWxId(wxId);
         Optional<Book> book = bookRepository.findById(bookId);
         if (!user.isPresent() || !book.isPresent()) {
             return new ResponseEntity<>("对象不存在", HttpStatus.NOT_FOUND);
@@ -92,6 +92,22 @@ public class CartService {
     }
 
 
+    public ResponseEntity<?> getCount(String wxId, Integer bookId) {
+        Optional<Cart> cart = cartRepository.findByBookId_IdAndUserId_WxId(bookId, wxId);
+        return cart.map(cart1 -> new ResponseEntity<>(cart1.getCount(), HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(0, HttpStatus.OK));
+    }
+
+
+    public ResponseEntity<?> getById(Integer cartId) throws JSONException {
+        Optional<Cart> cart = cartRepository.findById(cartId);
+        return cart.<ResponseEntity<?>>map(cart1 -> new ResponseEntity<>(cart1, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>("对象不存在", HttpStatus.NOT_FOUND));
+//        JSONObject jsonBook = Util.parseBookToJSONFull(cart.get().getBookId());
+//        jsonBook.put("count", cart.get().getCount());
+//        jsonBook.put("cartId", cart.get().getId());
+
+    }
 
 
 }

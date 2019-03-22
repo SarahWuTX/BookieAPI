@@ -57,4 +57,11 @@ public class OrderController {
     public ResponseEntity<?> pay (@RequestBody @Range(min = 0) Integer orderId) {
         return orderService.pay(orderId);
     }
+
+
+    @ApiOperation(value="获取某订单详情", notes = "")
+    @GetMapping(path = "/get")
+    public ResponseEntity<?> get(@RequestParam @Range(min = 0) Integer orderId) {
+        return orderService.get(orderId);
+    }
 }

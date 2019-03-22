@@ -41,7 +41,6 @@ public class Order {
     private Float deliveryFee;
 
     @Column(insertable = false)
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Timestamp orderTime;
 
     @OneToMany(mappedBy = "orderId")

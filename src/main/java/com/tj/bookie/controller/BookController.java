@@ -26,10 +26,10 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    @ApiOperation(value="获取所有书(无序)", notes="临时测试用")
+    @ApiOperation(value="获取所有书(无序)", notes="可以正常使用，注意第一个分页是0，每页10条")
     @GetMapping(path="/getAll")
-    public ResponseEntity<?> getAll() {
-        return bookService.getAll();
+    public ResponseEntity<?> getAll(@RequestParam @Range(min = 0) Integer page) {
+        return bookService.getAll(page);
     }
 
 

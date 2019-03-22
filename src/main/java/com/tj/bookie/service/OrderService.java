@@ -41,7 +41,7 @@ public class OrderService {
         int pageSize = 10;
         List<Order> orders = orderRepository.findAllByUserId_WxId
                 (wxId, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "orderTime"))).getContent();
-        orders = this.fulfillOrders(orders);
+        orders.forEach(this::fulfillOrder);
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
@@ -49,7 +49,7 @@ public class OrderService {
     public ResponseEntity<?> getByStatus(String wxId, Integer status) {
         List<Order> orders = orderRepository.findAllByUserId_WxIdAndStatus
                 (wxId, status, Sort.by(Sort.Direction.DESC, "orderTime"));
-        orders = this.fulfillOrders(orders);
+        orders.forEach(this::fulfillOrder);
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
@@ -91,7 +91,7 @@ public class OrderService {
         // total price
         float totalPrice = order.getDeliveryFee();
         for (Cart cart: carts) {
-            totalPrice += cart.getBookId().getPrice()*cart.getBookId().getDiscount();
+            totalPrice += cart.getBookId().getPrice()*cart.getBookId().getDiscount()*cart.getCount();
         }
         order.setTotalPrice(totalPrice);
         // save
@@ -117,22 +117,28 @@ public class OrderService {
     }
 
 
+    public ResponseEntity<?> get(Integer orderId) {
+        Optional<Order> order = orderRepository.findById(orderId);
+        return order.<ResponseEntity<?>>map(order1 -> new ResponseEntity<>(this.fulfillOrder(order1), HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>("对象不存在", HttpStatus.NOT_FOUND));
+
+    }
+
+
 
     /**
-     * complete some properties of each order
-     * @param orders order list
-     * @return modified order list
+     * complete some properties of order
+     * @param order order
+     * @return modified order
      */
-    public List<Order> fulfillOrders(List<Order> orders) {
-        for (Order order:orders) {
-            order.setOrderId(String.format("%06d", order.getId()));
-            int totalCount = 0;
-            for (History h: order.getOrderList()) {
-                totalCount += h.getCount();
-            }
-            order.setTotalCount(totalCount);
+    public Order fulfillOrder(Order order) {
+        order.setOrderId(String.format("%06d", order.getId()));
+        int totalCount = 0;
+        for (History h: order.getOrderList()) {
+            totalCount += h.getCount();
         }
-        return orders;
+        order.setTotalCount(totalCount);
+        return order;
     }
 
 
